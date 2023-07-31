@@ -1,7 +1,5 @@
 // Define a constant to identify the dialog channel (any number between 0 and 65535)
 integer DIALOG_CHANNEL = -1;
-// Define a constant for the dialog menu's unique identifier
-integer DIALOG_MENU_ID = 0666;
 
 key BLACK_UUID = "d7e43026-c096-4321-4e3b-17d19fd0a83e";
 
@@ -46,6 +44,10 @@ pageSelected(string np) {
 }
 
 firstPageClicked(key id) {
+    llDialog(id, "First Page", fpOptions, DIALOG_CHANNEL);
+}
+
+customFirstPageClicked(key id) {
     textAux = 3;
     showInputDialog(id, "Inform new first page");
 }
@@ -98,6 +100,10 @@ default
         else if (message == "Wallpaper") wallpaperClicked(id);
         else if (message == "Black") wallpaperTextureSelected(BLACK_UUID);
         else if (message == "Texture") textureClicked(id);
+        else if (message == "Google") firstPageSelected("www.google.com");
+        else if (message == "Youtube") firstPageSelected("www.youtube.com");
+        else if (message == "Isabela Evergarden") firstPageSelected("https://www.instagram.com/isabelaevergarden/");
+        else if (message == "Custom") customFirstPageClicked(id);
         else {
             if (textAux == 0) {
                 if (llStringLength(message) != 4) llOwnerSay("Invalid Pair Code");
