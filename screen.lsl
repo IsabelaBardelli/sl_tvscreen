@@ -11,7 +11,7 @@ string firstPage = "https://www.instagram.com/isabelaevergarden/";
 // methods
 generate_pairCode(integer verbose) {
     float f = llRound(llFrand(10) * 1000);
-    integer pairCode = (integer) f;
+    pairCode = (integer) f;
     if (verbose) llOwnerSay("Pair Code is: " + (string) pairCode);
 }
 
@@ -27,13 +27,15 @@ turn_power() {
     else start_tv();
 }
 
+change_page(string newPg) {
+    llClearPrimMedia(face);
+    llSetPrimMediaParams(face, [PRIM_MEDIA_CURRENT_URL, newPg]);
+}
+
 // Listens to needed resource only
 change_listener(integer listener, string cKey) {
     llListenRemove(listener);
     connectorListener = llListen(pairCode, "", (key) cKey, "");
-}
-focus_listener(key cKey) {
-    change_listener(connectorListener, NULL_KEY);
 }
 
 default
@@ -46,17 +48,25 @@ default
 
     listen(integer channel, string name, key id, string message) {
         message = llStringTrim(message, STRING_TRIM);
-        command = llParseString2List(message, ["::"], [])[0];
-        code = llParseString2List(message, ["::"], [])[1];
+        list l = llParseString2List(message, ["::"], []);
+        string command = llList2String(l, 0);
+        string code = llList2String(l, 1);
 
-        if (name == "pair") {
-            connKey = code;
-            focus_listener(connKey);
-            llOwnerSay("TV Paired with #" + pairCode);
-        } else if (name == "power") {
+        if (command == "pair") {
+            connKey = (key) code;
+            change_listener(connectorListener, connKey);
+            llOwnerSay("TV Paired with #" + (string) pairCode);
+        } else if (command == "power") {
             turn_power();
-        } else if (name == "face") {
-            face = (integer) code;
+        } else if (command == "face") {
+            llClearPrimMedia(face); // clear old
+            face = (integer) code; // set new
+            if (powerOn) start_tv();
+        } else if (command == "firstPage") {
+            firstPage = code;
+            llOwnerSay("New first page saved: " + firstPage);
+        } else if (command == "page") {
+            change_page(code);
         }
     }
 } 

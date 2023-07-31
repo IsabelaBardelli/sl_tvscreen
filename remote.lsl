@@ -1,26 +1,30 @@
-list unpairedButtons = ["Pair"];
-list pairedButtons = ["Pair", "Power", "First Page", "Page", "Default Texture", "Face"];
+list pairedButtons = ["Pair", "Power", "First Page", "Page", "Wallpaper", "Face"];
 list fpOptions = ["Google", "Youtube", "Custom", "Isabela Evergarden"];
+list wallOptions = ["Black", "Texture"];
 
-boolean isPaired = false;
 integer pairCode = -1;
+integer face = -1;
 
-integer face;
+integer listenHandle = -1;
 
 powerClicked() {
     llWhisper(pairCode, "power::0");
 }
 
 pairClicked() {
-    llWhisper(pairCode, "pair::" + llGetKey());
+    llWhisper(pairCode, "pair::" + (string) llGetKey());
 }
 
 faceClicked(integer sf) {
-    llWhisper(pairCode, "sf::" + (string) sf);
+    llWhisper(pairCode, "face::" + (string) sf);
 }
 
 changeFirstPage(string fp) {
-    llWhisper(pairCode, "fp::" + fp);
+    llWhisper(pairCode, "firstPage::" + fp);
+}
+
+changePage(string np) {
+    llWhisper(pairCode, "page::" + np);
 }
 
 default
@@ -30,8 +34,16 @@ default
         key toucherId = llDetectedKey(0);
         integer channelDialog = -1 - (integer)("0x" + llGetSubString( (string)llGetKey(), -7, -1) );
 
-        if (isPaired)
-            llDialog(toucherId, "Remote Buttons", pairedButtons, channelDialog);
-        else llDialog(toucherId, "Remote Buttons", unpairedButtons, channelDialog);
+        
+        listenHandle = llListen(channelDialog, "", toucherId, "");
+        llDialog(toucherId, "Remote Buttons", pairedButtons, channelDialog);
+    }
+
+    listen(integer channel, string name, key id, string message)
+    {
+        llListenRemove(listenHandle);
+        if (message == "Pair")  pairClicked();
+        else if (message = "Face") faceClicked(face);
+        else if (message == "Power") powerClicked();     
     }
 }
