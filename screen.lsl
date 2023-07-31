@@ -48,6 +48,7 @@ default
 
     listen(integer channel, string name, key id, string message) {
         message = llStringTrim(message, STRING_TRIM);
+
         list l = llParseString2List(message, ["::"], []);
         string command = llList2String(l, 0);
         string code = llList2String(l, 1);
@@ -59,14 +60,17 @@ default
         } else if (command == "power") {
             turn_power();
         } else if (command == "face") {
-            llClearPrimMedia(face); // clear old
+            if (face > -1) llClearPrimMedia(face); // clear old
             face = (integer) code; // set new
+            llOwnerSay("New face set #" + (string) face);
             if (powerOn) start_tv();
         } else if (command == "firstPage") {
             firstPage = code;
             llOwnerSay("New first page saved: " + firstPage);
+        } else if (command == "wall" && face > -1) {
+            llSetTexture(code, face);
         } else if (command == "page") {
-            change_page(code);
+            // change_page(code);
         }
     }
 } 
