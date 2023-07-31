@@ -3,6 +3,8 @@ integer DIALOG_CHANNEL = -1;
 
 key BLACK_UUID = "d7e43026-c096-4321-4e3b-17d19fd0a83e";
 
+list unpairedButtons = ["Pair"];
+list unfacedButtons = ["Face"];
 list pairedButtons = ["Pair", "Power", "First Page", "Wallpaper", "Face"];
 list fpOptions = ["Google", "Youtube", "Custom", "Isabela Evergarden"];
 list wallOptions = ["Black", "Texture"];
@@ -85,7 +87,10 @@ default
         key toucherId = llDetectedKey(0);
 
         llListen(DIALOG_CHANNEL, "", NULL_KEY, "");
-        llDialog(toucherId, "Remote Buttons", pairedButtons, DIALOG_CHANNEL);
+
+        if (pairCode == -1) llDialog(toucherId, "Remote Buttons", unpairedButtons, DIALOG_CHANNEL);
+        else if (face == -1) llDialog(toucherId, "Remote Buttons", unfacedButtons, DIALOG_CHANNEL);
+        else llDialog(toucherId, "Remote Buttons", pairedButtons, DIALOG_CHANNEL);
     }
 
     listen(integer channel, string name, key id, string message)
